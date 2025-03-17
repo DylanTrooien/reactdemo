@@ -1,0 +1,32 @@
+version: '3.9'
+services:
+  ollama:
+    container_name: llm
+    image: ollama/ollama:latest
+    ports:
+      - '11434:11434'
+    volumes:
+      - ./llm:/root/.ollama
+    pull_policy: always
+    tty: true
+    restart: always
+
+  backend:
+    container_name: backend
+    build: ./backend
+    ports:
+      - '5000:5000'
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - ollama
+
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    ports:
+      - '5173:5173'
+    volumes:
+      - ./frontend/chat-ui:/app
+    depends_on:
+      - backend
